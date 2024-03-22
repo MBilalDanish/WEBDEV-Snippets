@@ -1,0 +1,25 @@
+<style>
+.not-scrolled {
+  transition: all 0.5s ease; / Smooth transition /
+}
+
+.scrolled {
+  position: fixed;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); / Light grey shadow /
+  transition: all 0.5s ease; / Smooth transition /
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  var mainHeader = jQuery('#main-header');
+  jQuery(window).scroll(function() {
+    if (jQuery(this).scrollTop() > 400) {
+      mainHeader.addClass('scrolled').removeClass('not-scrolled');
+    } else {
+      mainHeader.addClass('not-scrolled').removeClass('scrolled');
+    }
+  });
+});
+</script>
