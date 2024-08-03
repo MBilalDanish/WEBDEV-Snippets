@@ -1,0 +1,23 @@
+// Custom shortcode to list all categories
+function list_all_categories_shortcode() {
+    $categories = get_categories();
+
+    if ($categories) {
+        $output = '<div class="mbd-categories-list">';
+
+        foreach ($categories as $category) {
+            $category_link = get_category_link($category->cat_ID);
+			
+            $output .= '<a class="mbd-category-item" href="' . esc_url($category_link) . '">' . esc_html($category->name) . '</a>';
+        }
+
+        $output .= '</div>';
+
+        return $output;
+    } else {
+        return 'No categories found.';
+    }
+}
+
+// Register the shortcode
+add_shortcode('list_all_categories', 'list_all_categories_shortcode');
