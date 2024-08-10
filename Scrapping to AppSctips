@@ -1,0 +1,85 @@
+// Step 1: Query the table container
+let tableContainer = document.querySelector('[data-testid="table-virtualizer"]');
+
+// Step 2: Function to extract data from visible rows
+function extractVisibleRowsData(startRow, endRow) {
+    let data = [];
+    for (let rowIndex = startRow; rowIndex <= endRow; rowIndex++) {
+        let row = [];
+        for (let colIndex = 1; colIndex <= 17; colIndex++) {  // assuming there are 17 columns
+            let cell = tableContainer.querySelector(`[data-table-cell="true"][aria-rowindex="${rowIndex}"][aria-colindex="${colIndex}"]`);
+            if (cell) {
+                row.push(cell.innerText.trim());  // Extract and clean the text
+            } else {
+                row.push('');  // If cell is not found, push an empty string
+            }
+        }
+        data.push(row);
+    }
+    return data;
+}
+
+// Step 3: Scrolling function to load more rows
+function scrollTableContainer(targetRow) {
+    return new Promise((resolve) => {
+        let previousScrollTop = -1;
+        let intervalId = setInterval(() => {
+            tableContainer.scrollTop += 5; // Scroll down by 5 pixels
+
+            let currentScrollTop = tableContainer.scrollTop;
+            let targetCell = tableContainer.querySelector(`[data-table-cell="true"][aria-rowindex="${targetRow}"][aria-colindex="1"]`);
+
+            if (!targetCell || previousScrollTop === currentScrollTop) {
+                clearInterval(intervalId);
+                resolve();  // Resolve the promise when scrolling is done
+            }
+
+            previousScrollTop = currentScrollTop;
+        }, 50); // Adjust the interval time as needed
+    });
+}
+
+// Step 4: Main function to iterate, collect data, and scroll
+async function iterateAndCollectData(totalRows) {
+    let startRow = 1;
+    let batchSize = 50;  // Define how many rows you want to process at once
+
+    // Ensure the container starts at the top
+    tableContainer.scrollTop = 0;
+
+    while (startRow <= totalRows) {
+        let endRow = Math.min(startRow + batchSize - 1, totalRows);
+        let data = extractVisibleRowsData(startRow, endRow);
+        sendDataToGoogleSheet(data); // Send data to Google Sheets immediately after collecting it
+
+        if (endRow < totalRows) {
+            let hiddenRow = endRow + 1;  // Scroll until the next row is visible
+            await scrollTableContainer(hiddenRow);
+        }
+
+        startRow += batchSize;
+        await new Promise(resolve => setTimeout(resolve, 500));  // Add a small delay to ensure rows are loaded
+    }
+
+    console.log('Data collection complete.');
+}
+
+// Step 5: Function to send data to Google Sheets using a Web App
+function sendDataToGoogleSheet(data) {
+    const url = '';  // URL from the deployed Google Apps Script
+    fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',  // Disable CORS checking
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(() => {
+        // You won't be able to access the response body or parse it as JSON with 'no-cors'
+        console.log('Request sent. Response is opaque due to no-cors mode.');
+    })
+    .catch(error => console.error('Error sending data to Google Sheets:', error));
+}
+
+// Step 6: Execute the main function
+iterateAndCollectData(2216);
