@@ -1,0 +1,16 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.upk-post-grid .upk-item').forEach(function(item) {
+        var link = item.querySelector('a.title-animation-underline').getAttribute('href');
+
+        item.querySelector('.upk-img').addEventListener('click', function() {
+            window.location.href = link;
+        });
+    });
+});
+</script>
+<style>
+    .upk-img{
+        cursor: pointer;
+    }
+</style>
