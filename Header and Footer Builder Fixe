@@ -1,0 +1,17 @@
+Add elementor-section class in main container and add folllowing css in custom css
+<style>
+.hfe-nav-menu__breakpoint-mobile 
+.hfe-nav-menu__layout-horizontal 
+.hfe-nav-menu
+{
+     display: none;
+}
+.hfe-nav-menu__breakpoint-mobile 
+.hfe-active-menu.hfe-active-menu-full-width 
++ .hfe-nav-menu__layout-horizontal 
+.hfe-nav-menu
+{
+      display: block;
+}
+
+</style>
